@@ -186,6 +186,7 @@ export class JobListComponent implements OnInit {
 
   ngOnInit(): void {
     this.jobService.fetchJobs(1).subscribe();
+    this.jobService.fetchJobs(1).subscribe();
   }
 
   selectJob(job: Job): void {
