@@ -339,7 +339,9 @@ export class ApplyModalComponent {
   phone = '';
   coverLetter = '';
 
-  constructor(private applicationsService: ApplicationsService) {}
+  constructor(private applicationsService: ApplicationsService) {
+    this.validateStep1();
+  }
 
   validateStep1(): void {
     const errs: FormErrors = { fullName: '', email: '', phone: '', resume: '' };

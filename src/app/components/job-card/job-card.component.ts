@@ -79,7 +79,8 @@ import { Job } from '../../models/job.model';
     .card-tags {
       display: flex;
       gap: 4px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      overflow: hidden;
       margin-top: 10px;
     }
     .tag {
