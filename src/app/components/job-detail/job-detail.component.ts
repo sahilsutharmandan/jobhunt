@@ -6,6 +6,7 @@ import { ApplicationsService } from '../../services/applications.service';
 @Component({
   selector: 'app-job-detail',
   standalone: true,
+  providers: [SavedJobsService],
   template: `
     <div class="detail-panel">
       @if (job(); as j) {
@@ -64,6 +65,7 @@ import { ApplicationsService } from '../../services/applications.service';
       padding: 24px;
       overflow-y: auto;
       height: 100%;
+      overflow-x: visible;
       box-sizing: border-box;
     }
     .detail-header {
