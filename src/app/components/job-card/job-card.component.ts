@@ -111,8 +111,7 @@ export class JobCardComponent {
   }
 
   getTimeAgo(unixSeconds: number): string {
-    const now = Math.floor(Date.now() / 1000);
-    const diff = now - unixSeconds;
+    const diff = Date.now() - unixSeconds;
     const days = Math.floor(diff / 86400);
     if (days === 0) return 'Posted today';
     if (days === 1) return 'Posted 1 day ago';
