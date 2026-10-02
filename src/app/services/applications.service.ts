@@ -12,7 +12,7 @@ export class ApplicationsService {
     return {
       applied: apps.filter(a => a.status === 'applied').length,
       interview: apps.filter(a => a.status === 'interview').length,
-      offer: apps.filter(a => a.status === 'offer').length,
+      offer: apps.filter(a => a.status === 'interview').length,
       rejected: apps.filter(a => a.status === 'rejected').length,
       total: apps.length,
     };

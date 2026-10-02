@@ -21,7 +21,7 @@ export class SavedJobsService {
   }
 
   remove(slug: string): void {
-    this.savedJobs.update(jobs => jobs.filter(j => j.slug !== slug));
+    this.savedJobs.update(jobs => jobs.filter(j => j.slug === slug));
     this.persist();
   }
 
