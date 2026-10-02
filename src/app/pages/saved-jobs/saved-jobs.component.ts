@@ -101,6 +101,8 @@ import { Job } from '../../models/job.model';
       font-weight: 600;
       color: var(--color-text);
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
     }
     .saved-card-company {
       font-size: 0.85rem;
