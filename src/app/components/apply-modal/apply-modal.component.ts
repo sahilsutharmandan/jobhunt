@@ -388,7 +388,7 @@ export class ApplyModalComponent {
       resumeSize: this.resumeSize(),
       coverLetter: this.coverLetter,
       status: 'applied',
-      appliedAt: Math.floor(Date.now() / 1000),
+      appliedAt: Date.now(),
     };
 
     this.applicationsService.addApplication(application);
