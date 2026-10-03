@@ -21,15 +21,13 @@ import { FormsModule } from '@angular/forms';
         />
       </div>
       <div class="filters">
-        <div class="chip-group">
-          @for (type of jobTypes; track type) {
-            <button
-              class="chip"
-              [class.chip-active]="activeTypes().has(type)"
-              (click)="toggleType(type)"
-            >{{ type }}</button>
-          }
-        </div>
+        @for (type of jobTypes; track type) {
+          <button
+            class="chip"
+            [class.chip-active]="activeTypes().has(type)"
+            (click)="toggleType(type)"
+          >{{ type }}</button>
+        }
         <button
           class="chip"
           [class.chip-active]="remoteOnly()"
@@ -77,11 +75,6 @@ import { FormsModule } from '@angular/forms';
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
-    }
-    .chip-group {
-      display: flex;
-      gap: 6px;
       flex-wrap: wrap;
     }
     .chip {

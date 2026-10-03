@@ -112,13 +112,17 @@ export class JobCardComponent {
   }
 
   getTimeAgo(unixSeconds: number): string {
-    const diff = Date.now() - unixSeconds;
+    if (!unixSeconds) return '';
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    const diff = Math.max(0, nowSeconds - unixSeconds);
     const days = Math.floor(diff / 86400);
     if (days === 0) return 'Posted today';
     if (days === 1) return 'Posted 1 day ago';
     if (days < 30) return `Posted ${days} days ago`;
     const months = Math.floor(days / 30);
     if (months === 1) return 'Posted 1 month ago';
-    return `Posted ${months} months ago`;
+    if (months < 12) return `Posted ${months} months ago`;
+    const years = Math.floor(days / 365);
+    return years === 1 ? 'Posted 1 year ago' : `Posted ${years} years ago`;
   }
 }

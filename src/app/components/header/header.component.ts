@@ -60,6 +60,22 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       background: var(--color-primary);
       color: #fff;
     }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        padding: 0 12px;
+      }
+      .logo {
+        font-size: 1.3rem;
+      }
+      .nav {
+        gap: 4px;
+      }
+      .nav a {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+      }
+    }
   `]
 })
 export class HeaderComponent {}

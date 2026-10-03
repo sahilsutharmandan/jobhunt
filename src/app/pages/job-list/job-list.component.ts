@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { JobCardComponent } from '../../components/job-card/job-card.component';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
 import { FilterBarComponent } from '../../components/filter-bar/filter-bar.component';
@@ -131,18 +131,25 @@ import { Job } from '../../models/job.model';
       }
       .job-list-page.detail-open .detail-panel-wrapper {
         display: flex;
+        height: 100%;
       }
       .job-list-page.detail-open .back-btn {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 6px;
         padding: 12px 16px;
-        background: none;
+        background: #fff;
         border: none;
         border-bottom: 1px solid #e5e7eb;
         font-size: 0.9rem;
         color: var(--color-primary);
         cursor: pointer;
         text-align: left;
-        font-weight: 500;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+      .job-list-page.detail-open .back-btn:hover {
+        background: #f8fafc;
       }
     }
   `]
@@ -182,10 +189,39 @@ export class JobListComponent implements OnInit {
     return jobs;
   });
 
-  constructor(public jobService: JobService) {}
+  constructor(public jobService: JobService) {
+    effect(() => {
+      const jobs = this.filteredJobs();
+      const current = this.selectedJob();
+      const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
+
+      if (jobs.length === 0) {
+        if (current !== null) {
+          this.selectedJob.set(null);
+        }
+        return;
+      }
+
+      if (current) {
+        const match = jobs.find(j => j.slug === current.slug);
+        if (match) {
+          if (match !== current) {
+            this.selectedJob.set(match);
+          }
+          return;
+        }
+      }
+
+      // If current job is not in filtered results (or null on initial load on desktop)
+      if (isDesktop) {
+        this.selectedJob.set(jobs[0]);
+      } else if (current !== null) {
+        this.selectedJob.set(null);
+      }
+    }, { allowSignalWrites: true });
+  }
 
   ngOnInit(): void {
-    this.jobService.fetchJobs(1).subscribe();
     this.jobService.fetchJobs(1).subscribe();
   }
 

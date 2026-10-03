@@ -339,9 +339,7 @@ export class ApplyModalComponent {
   phone = '';
   coverLetter = '';
 
-  constructor(private applicationsService: ApplicationsService) {
-    this.validateStep1();
-  }
+  constructor(private applicationsService: ApplicationsService) {}
 
   validateStep1(): void {
     const errs: FormErrors = { fullName: '', email: '', phone: '', resume: '' };
@@ -388,7 +386,7 @@ export class ApplyModalComponent {
       resumeSize: this.resumeSize(),
       coverLetter: this.coverLetter,
       status: 'applied',
-      appliedAt: Date.now(),
+      appliedAt: Math.floor(Date.now() / 1000),
     };
 
     this.applicationsService.addApplication(application);
