@@ -201,9 +201,10 @@ export class ApplicationsComponent {
     this.applicationsService.updateStatus(id, status);
   }
 
-  getTimeAgo(unixSeconds: number): string {
+  getTimeAgo(timestamp: number): string {
+    const unixSeconds = timestamp > 1e11 ? Math.floor(timestamp / 1000) : timestamp;
     const now = Math.floor(Date.now() / 1000);
-    const diff = now - unixSeconds;
+    const diff = Math.max(0, now - unixSeconds);
     const days = Math.floor(diff / 86400);
     if (days === 0) return 'today';
     if (days === 1) return '1 day ago';
