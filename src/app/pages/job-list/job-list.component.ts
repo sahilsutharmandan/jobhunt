@@ -1,4 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, effect, untracked } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { SavedJobsService } from '../../services/saved-jobs.service';
 import { JobCardComponent } from '../../components/job-card/job-card.component';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
 import { FilterBarComponent } from '../../components/filter-bar/filter-bar.component';
@@ -49,7 +52,7 @@ import { Job } from '../../models/job.model';
 
       <div class="detail-panel-wrapper">
         @if (selectedJob()) {
-          <button class="back-btn" (click)="selectedJob.set(null)">
+          <button class="back-btn" (click)="clearSelection()">
             &larr; Back to jobs
           </button>
         }
@@ -182,15 +185,33 @@ export class JobListComponent implements OnInit {
     return jobs;
   });
 
-  constructor(public jobService: JobService) {}
+  constructor(
+    public jobService: JobService,
+    private savedJobsService: SavedJobsService,
+    private router: Router,
+    route: ActivatedRoute
+  ) {
+    const params = toSignal(route.queryParamMap, { initialValue: route.snapshot.queryParamMap });
+    effect(() => {
+      const slug = params().get('job');
+      this.selectedJob.set(
+        this.jobService.jobs().find(job => job.slug === slug)
+        ?? this.savedJobsService.savedJobs().find(job => job.slug === slug)
+        ?? untracked(() => this.selectedJob()?.slug === slug ? this.selectedJob() : null)
+      );
+    }, { allowSignalWrites: true });
+  }
 
   ngOnInit(): void {
-    this.jobService.fetchJobs(1).subscribe();
     this.jobService.fetchJobs(1).subscribe();
   }
 
   selectJob(job: Job): void {
-    this.selectedJob.set(job);
+    this.router.navigate(['/'], { queryParams: { job: job.slug } });
+  }
+
+  clearSelection(): void {
+    this.router.navigate(['/']);
   }
 
   openApplyModal(job: Job): void {

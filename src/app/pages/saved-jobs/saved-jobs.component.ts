@@ -65,7 +65,7 @@ import { Job } from '../../models/job.model';
     }
     .saved-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
       gap: 16px;
     }
     .saved-card {
@@ -101,8 +101,8 @@ import { Job } from '../../models/job.model';
       font-weight: 600;
       color: var(--color-text);
       margin: 0;
-      white-space: nowrap;
-      overflow: hidden;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
     .saved-card-company {
       font-size: 0.85rem;
@@ -164,7 +164,7 @@ export class SavedJobsComponent {
   ) {}
 
   viewJob(job: Job): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/'], { queryParams: { job: job.slug } });
   }
 
   getInitials(name: string): string {
