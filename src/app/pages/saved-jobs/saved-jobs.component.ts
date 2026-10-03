@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SavedJobsService } from '../../services/saved-jobs.service';
+import { JobService } from '../../services/job.service';
 import { Job } from '../../models/job.model';
 
 @Component({
@@ -22,7 +23,7 @@ import { Job } from '../../models/job.model';
               <div class="saved-card-top">
                 <div class="avatar">{{ getInitials(job.company_name) }}</div>
                 <div class="saved-card-info">
-                  <h3 class="saved-card-title">{{ job.title }}</h3>
+                  <h3 class="saved-card-title" [title]="job.title">{{ job.title }}</h3>
                   <p class="saved-card-company">{{ job.company_name }}</p>
                   <p class="saved-card-location">{{ job.location || 'Remote' }}</p>
                 </div>
@@ -103,6 +104,7 @@ import { Job } from '../../models/job.model';
       margin: 0;
       white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
     .saved-card-company {
       font-size: 0.85rem;
@@ -160,10 +162,12 @@ import { Job } from '../../models/job.model';
 export class SavedJobsComponent {
   constructor(
     public savedJobsService: SavedJobsService,
+    private jobService: JobService,
     private router: Router
   ) {}
 
   viewJob(job: Job): void {
+    this.jobService.selectJob(job);
     this.router.navigate(['/']);
   }
 

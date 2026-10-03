@@ -6,7 +6,6 @@ import { ApplicationsService } from '../../services/applications.service';
 @Component({
   selector: 'app-job-detail',
   standalone: true,
-  providers: [SavedJobsService],
   template: `
     <div class="detail-panel">
       @if (job(); as j) {

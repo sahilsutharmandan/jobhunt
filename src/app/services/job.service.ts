@@ -11,8 +11,13 @@ export class JobService {
   readonly loading = signal(false);
   readonly currentPage = signal(1);
   readonly lastPage = signal(1);
+  readonly selectedJob = signal<Job | null>(null);
 
   constructor(private http: HttpClient) {}
+
+  selectJob(job: Job | null): void {
+    this.selectedJob.set(job);
+  }
 
   fetchJobs(page: number = 1): Observable<JobApiResponse> {
     const cacheKey = `jobhunt_jobs_page_${page}`;

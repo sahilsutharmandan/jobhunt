@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { JobCardComponent } from '../../components/job-card/job-card.component';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
 import { FilterBarComponent } from '../../components/filter-bar/filter-bar.component';
@@ -148,7 +148,8 @@ import { Job } from '../../models/job.model';
   `]
 })
 export class JobListComponent implements OnInit {
-  readonly selectedJob = signal<Job | null>(null);
+  public readonly jobService = inject(JobService);
+  readonly selectedJob = this.jobService.selectedJob;
   readonly applyJob = signal<Job | null>(null);
   readonly searchTerm = signal('');
   readonly activeFilters = signal<{ types: Set<string>; remoteOnly: boolean }>({
@@ -182,15 +183,12 @@ export class JobListComponent implements OnInit {
     return jobs;
   });
 
-  constructor(public jobService: JobService) {}
-
   ngOnInit(): void {
-    this.jobService.fetchJobs(1).subscribe();
     this.jobService.fetchJobs(1).subscribe();
   }
 
-  selectJob(job: Job): void {
-    this.selectedJob.set(job);
+  selectJob(job: Job | null): void {
+    this.jobService.selectJob(job);
   }
 
   openApplyModal(job: Job): void {
