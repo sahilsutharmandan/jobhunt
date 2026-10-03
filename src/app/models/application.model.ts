@@ -12,5 +12,6 @@ export interface Application {
   resumeSize: number;
   coverLetter: string;
   status: ApplicationStatus;
+  /** Submission time in milliseconds since the Unix epoch. */
   appliedAt: number;
 }

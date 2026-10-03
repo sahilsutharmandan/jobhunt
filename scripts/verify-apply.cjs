@@ -1,0 +1,83 @@
+const assert = require('node:assert/strict');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('http://127.0.0.1:4200');
+  await page.locator('app-job-card').first().waitFor();
+  const cards = page.locator('app-job-card');
+  const titles = await cards.locator('.card-title').allTextContents();
+  const index = titles.findIndex(t => t.length < 45);
+  await cards.nth(index < 0 ? 0 : index).click();
+  await page.getByRole('button', { name: 'Easy Apply', exact: true }).click();
+  assert.equal(await page.locator('.form-error').count(), 0);
+  await page.screenshot({ animations: 'disabled', path: 'evidence/after/1-clicked-easy-apply.png' });
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  await page.locator('.form-error').nth(2).waitFor();
+  assert.equal(await page.locator('.form-error').count(), 3);
+  await page.getByLabel('Full Name', {exact:true}).fill('Alex Morgan');
+  await page.getByLabel('Email', {exact:true}).fill('alex@example.com');
+  await page.getByLabel('Phone', {exact:true}).fill('+1 555 123 4567');
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  assert.match(await page.locator('.form-error').innerText(), /select a resume/);
+  await page.getByLabel('Resume', {exact:true}).setInputFiles({name:'alex-resume.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4\n% Test resume fixture\n%%EOF')});
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  assert.match(await page.locator('.review-section').first().innerText(), /Alex Morgan/);
+  await page.getByRole('button', { name: 'Submit Application', exact: true }).click();
+  await page.getByText('Application Submitted', {exact:true}).waitFor();
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.getByRole('link', {name:'Applications',exact:true}).click();
+  async function counts(expected) {
+    await page.waitForFunction(values => JSON.stringify([...document.querySelectorAll('.stat-count')].map(e=>e.textContent.trim())) === JSON.stringify(values.map(String)), expected);
+    assert.deepEqual(await page.locator('.stat-count').allTextContents(), expected.map(String));
+  }
+  await counts([1,1,0,0,0]);
+  assert.equal(await page.locator('.app-date').innerText(), 'Applied today');
+  await page.screenshot({ animations: 'disabled', path: 'evidence/after/2-applications-after-submitting.png' });
+  await page.locator('select').selectOption('interview');
+  await counts([1,0,1,0,0]);
+  await page.screenshot({ animations: 'disabled', path: 'evidence/after/3-after-changing-status-to-interview.png' });
+  await page.reload();
+  await page.locator('select').waitFor();
+  await counts([1,0,1,0,0]);
+  assert.equal(await page.locator('select').inputValue(), 'interview');
+  for (const [status, expected] of [['offer',[1,0,0,1,0]],['rejected',[1,0,0,0,1]],['applied',[1,1,0,0,0]]]) {
+    await page.locator('select').selectOption(status);
+    await counts(expected);
+  }
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('jobhunt_applications')));
+  assert.equal(stored.length,1);
+  assert.ok(Math.abs(Date.now()-stored[0].appliedAt)<120000);
+  for (const [days, expected] of [[1,'1 day ago'],[7,'7 days ago'],[30,'1 month ago'],[60,'2 months ago'],[-1,'today']]) {
+    await page.evaluate(days => {const apps=JSON.parse(localStorage.getItem('jobhunt_applications'));apps[0].appliedAt=Date.now()-days*86400000;localStorage.setItem('jobhunt_applications',JSON.stringify(apps));},days);
+    await page.reload();
+    await page.locator('.app-date').waitFor();
+    assert.equal(await page.locator('.app-date').innerText(), `Applied ${expected}`);
+  }
+  await page.evaluate(apps=>localStorage.setItem('jobhunt_applications',JSON.stringify(apps)),stored);
+  await page.reload();
+  await page.locator('select').selectOption('interview');
+  await page.setViewportSize({width:393,height:852});
+  await counts([1,0,1,0,0]);
+  assert.ok(await page.locator('.app-card').evaluate(e => e.getBoundingClientRect().right <= innerWidth));
+  await page.screenshot({ animations: 'disabled',path:'evidence/after/4-mobile-interview.png'});
+  await page.evaluate(()=>localStorage.removeItem('jobhunt_applications'));
+  await page.goto('http://127.0.0.1:4200');
+  await page.locator('app-job-card').first().click();
+  await page.getByRole('button',{name:'Easy Apply',exact:true}).click();
+  assert.equal(await page.locator('.form-error').count(),0);
+  assert.ok(await page.locator('.modal').evaluate(e => e.getBoundingClientRect().right <= innerWidth));
+  await page.screenshot({ animations: 'disabled',path:'evidence/after/5-mobile-easy-apply.png'});
+  await page.getByRole('button',{name:'Next',exact:true}).click();
+  await page.locator('.form-error').nth(2).waitFor();
+  assert.equal(await page.locator('.form-error').count(),3);
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+  await page.getByRole('button',{name:'Easy Apply',exact:true}).click();
+  assert.equal(await page.locator('.form-error').count(),0);
+  assert.deepEqual(errors,[]);
+  console.log('PASS: initial/reopened form, required fields, resume, review, submission, date boundaries, all statuses, reload persistence, desktop/mobile application flow; no browser errors.');
+  await browser.close();
+})().catch(error=>{console.error(error);process.exit(1)});
