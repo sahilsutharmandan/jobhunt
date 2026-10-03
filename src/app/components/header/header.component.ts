@@ -56,6 +56,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       background: #f1f5f9;
       color: var(--color-text);
     }
+    @media (max-width: 480px) {
+      .header-inner { padding: 0 12px; gap: 12px; }
+      .logo { font-size: 1.2rem; }
+      .nav { gap: 2px; }
+      .nav a { padding: 8px 7px; font-size: 0.8rem; }
+    }
     .nav a.active {
       background: var(--color-primary);
       color: #fff;

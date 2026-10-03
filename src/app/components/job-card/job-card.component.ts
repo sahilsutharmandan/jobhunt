@@ -1,3 +1,4 @@
+import { getTimeAgo } from '../../utils/job-format';
 import { Component, input, output } from '@angular/core';
 import { Job } from '../../models/job.model';
 
@@ -5,7 +6,7 @@ import { Job } from '../../models/job.model';
   selector: 'app-job-card',
   standalone: true,
   template: `
-    <div class="job-card" [class.job-card-active]="active()" (click)="selected.emit(job())">
+    <div role="button" tabindex="0" (keydown.enter)="selected.emit(job())" (keydown.space)="$event.preventDefault(); selected.emit(job())" class="job-card" [class.job-card-active]="active()" (click)="selected.emit(job())">
       <div class="card-top">
         <div class="avatar">{{ getInitials(job().company_name) }}</div>
         <div class="card-info">
@@ -29,6 +30,7 @@ import { Job } from '../../models/job.model';
       cursor: pointer;
       transition: background 0.15s;
     }
+    .job-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -2px; }
     .job-card:hover {
       background: #f8fafc;
     }
@@ -62,7 +64,8 @@ import { Job } from '../../models/job.model';
       font-weight: 600;
       color: var(--color-text);
       margin: 0;
-      white-space: nowrap;
+      white-space: normal;
+      overflow-wrap: anywhere;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -79,7 +82,7 @@ import { Job } from '../../models/job.model';
     .card-tags {
       display: flex;
       gap: 4px;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       overflow: hidden;
       margin-top: 10px;
     }
@@ -111,14 +114,5 @@ export class JobCardComponent {
       .toUpperCase();
   }
 
-  getTimeAgo(unixSeconds: number): string {
-    const diff = Date.now() - unixSeconds;
-    const days = Math.floor(diff / 86400);
-    if (days === 0) return 'Posted today';
-    if (days === 1) return 'Posted 1 day ago';
-    if (days < 30) return `Posted ${days} days ago`;
-    const months = Math.floor(days / 30);
-    if (months === 1) return 'Posted 1 month ago';
-    return `Posted ${months} months ago`;
-  }
+  readonly getTimeAgo = getTimeAgo;
 }

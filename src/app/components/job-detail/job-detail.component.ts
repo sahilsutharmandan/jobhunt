@@ -1,3 +1,4 @@
+import { getTimeAgo } from '../../utils/job-format';
 import { Component, input, output } from '@angular/core';
 import { Job } from '../../models/job.model';
 import { SavedJobsService } from '../../services/saved-jobs.service';
@@ -61,11 +62,12 @@ import { ApplicationsService } from '../../services/applications.service';
     </div>
   `,
   styles: [`
+    :host { display: block; flex: 1; min-height: 0; }
     .detail-panel {
       padding: 24px;
       overflow-y: auto;
       height: 100%;
-      overflow-x: visible;
+      overflow-wrap: anywhere;
       box-sizing: border-box;
     }
     .detail-header {
@@ -73,6 +75,7 @@ import { ApplicationsService } from '../../services/applications.service';
       gap: 16px;
       align-items: flex-start;
     }
+    .detail-header > div:last-child { min-width: 0; }
     .detail-avatar {
       width: 56px;
       height: 56px;
@@ -229,14 +232,5 @@ export class JobDetailComponent {
       .toUpperCase();
   }
 
-  getTimeAgo(unixSeconds: number): string {
-    const diff = Date.now() - unixSeconds;
-    const days = Math.floor(diff / 86400);
-    if (days === 0) return 'Posted today';
-    if (days === 1) return 'Posted 1 day ago';
-    if (days < 30) return `Posted ${days} days ago`;
-    const months = Math.floor(days / 30);
-    if (months === 1) return 'Posted 1 month ago';
-    return `Posted ${months} months ago`;
-  }
+  readonly getTimeAgo = getTimeAgo;
 }

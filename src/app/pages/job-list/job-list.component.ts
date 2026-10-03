@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { normalizeJobType } from '../../utils/job-format';
+import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { JobCardComponent } from '../../components/job-card/job-card.component';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
 import { FilterBarComponent } from '../../components/filter-bar/filter-bar.component';
@@ -11,7 +12,7 @@ import { Job } from '../../models/job.model';
   standalone: true,
   imports: [JobCardComponent, JobDetailComponent, FilterBarComponent, ApplyModalComponent],
   template: `
-    <div class="job-list-page" [class.detail-open]="!!selectedJob()">
+    <div class="job-list-page" [class.detail-open]="mobileDetailOpen()">
       <div class="list-panel">
         <app-filter-bar
           (searchChange)="onSearchChange($event)"
@@ -49,7 +50,7 @@ import { Job } from '../../models/job.model';
 
       <div class="detail-panel-wrapper">
         @if (selectedJob()) {
-          <button class="back-btn" (click)="selectedJob.set(null)">
+          <button class="back-btn" (click)="mobileDetailOpen.set(false)">
             &larr; Back to jobs
           </button>
         }
@@ -70,8 +71,8 @@ import { Job } from '../../models/job.model';
   styles: [`
     .job-list-page {
       display: grid;
-      grid-template-columns: 380px 1fr;
-      height: calc(100vh - 60px);
+      grid-template-columns: 380px minmax(0, 1fr);
+      height: calc(100dvh - 60px);
     }
     .list-panel {
       border-right: 1px solid #e5e7eb;
@@ -84,6 +85,7 @@ import { Job } from '../../models/job.model';
       overflow-y: auto;
     }
     .detail-panel-wrapper {
+      min-height: 0;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -148,6 +150,7 @@ import { Job } from '../../models/job.model';
   `]
 })
 export class JobListComponent implements OnInit {
+  readonly mobileDetailOpen = signal(false);
   readonly selectedJob = signal<Job | null>(null);
   readonly applyJob = signal<Job | null>(null);
   readonly searchTerm = signal('');
@@ -158,7 +161,7 @@ export class JobListComponent implements OnInit {
 
   readonly filteredJobs = computed(() => {
     let jobs = this.jobService.jobs();
-    const term = this.searchTerm().toLowerCase();
+    const term = this.searchTerm().trim().toLowerCase();
     const filters = this.activeFilters();
 
     if (term) {
@@ -171,7 +174,7 @@ export class JobListComponent implements OnInit {
 
     if (filters.types.size > 0) {
       jobs = jobs.filter(j =>
-        j.job_types.some(t => filters.types.has(t))
+        j.job_types.some(t => [...filters.types].some(filter => normalizeJobType(filter) === normalizeJobType(t)))
       );
     }
 
@@ -182,15 +185,24 @@ export class JobListComponent implements OnInit {
     return jobs;
   });
 
-  constructor(public jobService: JobService) {}
+  constructor(public jobService: JobService) {
+    effect(() => {
+      const jobs = this.filteredJobs();
+      const selected = this.selectedJob();
+      if (!selected || !jobs.some(job => job.slug === selected.slug)) {
+        this.selectedJob.set(jobs[0] ?? null);
+        this.mobileDetailOpen.set(false);
+      }
+    }, { allowSignalWrites: true });
+  }
 
   ngOnInit(): void {
-    this.jobService.fetchJobs(1).subscribe();
     this.jobService.fetchJobs(1).subscribe();
   }
 
   selectJob(job: Job): void {
     this.selectedJob.set(job);
+    this.mobileDetailOpen.set(true);
   }
 
   openApplyModal(job: Job): void {
