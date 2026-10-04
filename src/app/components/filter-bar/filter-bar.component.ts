@@ -1,5 +1,9 @@
 import { Component, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+
+export type JobSort = 'recent' | 'company' | 'title';
 
 @Component({
   selector: 'app-filter-bar',
@@ -18,7 +22,11 @@ import { FormsModule } from '@angular/forms';
           placeholder="Search jobs by title, company, or tags..."
           [ngModel]="searchTerm()"
           (ngModelChange)="onSearchChange($event)"
+          (keydown.escape)="clearSearch()"
         />
+        @if (searchTerm()) {
+          <button class="search-clear" type="button" aria-label="Clear search" (click)="clearSearch()">&times;</button>
+        }
       </div>
       <div class="filters">
         <div class="chip-group">
@@ -35,6 +43,14 @@ import { FormsModule } from '@angular/forms';
           [class.chip-active]="remoteOnly()"
           (click)="toggleRemote()"
         >Remote only</button>
+        <label class="sort">
+          <span>Sort</span>
+          <select [ngModel]="sort()" (ngModelChange)="onSortChange($event)">
+            <option value="recent">Most recent</option>
+            <option value="company">Company A–Z</option>
+            <option value="title">Title A–Z</option>
+          </select>
+        </label>
       </div>
     </div>
   `,
@@ -67,6 +83,21 @@ import { FormsModule } from '@angular/forms';
       background: var(--color-surface);
       color: var(--color-text);
     }
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: var(--color-subtle);
+      color: var(--color-muted);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
     .search-input:focus {
       border-color: var(--color-primary);
     }
@@ -78,6 +109,22 @@ import { FormsModule } from '@angular/forms';
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+    }
+    .sort {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--color-muted);
+    }
+    .sort select {
+      padding: 5px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 0.8rem;
     }
     .chip-group {
       display: flex;
@@ -112,17 +159,37 @@ import { FormsModule } from '@angular/forms';
 })
 export class FilterBarComponent {
   readonly searchChange = output<string>();
+  readonly sortChange = output<JobSort>();
   readonly filtersChange = output<{ types: Set<string>; remoteOnly: boolean }>();
 
   readonly searchTerm = signal('');
   readonly remoteOnly = signal(false);
   readonly activeTypes = signal<Set<string>>(new Set());
+  readonly sort = signal<JobSort>('recent');
+
+  private readonly search$ = new Subject<string>();
 
   readonly jobTypes = ['Full Time', 'Part Time', 'Contract', 'Internship'];
 
+  constructor() {
+    this.search$
+      .pipe(debounceTime(250), distinctUntilChanged(), takeUntilDestroyed())
+      .subscribe(term => this.searchChange.emit(term));
+  }
+
   onSearchChange(value: string): void {
     this.searchTerm.set(value);
-    this.searchChange.emit(value);
+    this.search$.next(value.trim());
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
+    this.searchChange.emit('');
+  }
+
+  onSortChange(value: JobSort): void {
+    this.sort.set(value);
+    this.sortChange.emit(value);
   }
 
   toggleType(type: string): void {

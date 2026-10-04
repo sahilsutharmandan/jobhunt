@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
+import { EMPTY, Observable, catchError, of, tap } from 'rxjs';
 import { Job, JobApiResponse } from '../models/job.model';
 
 @Injectable({ providedIn: 'root' })
@@ -11,6 +11,7 @@ export class JobService {
   readonly loading = signal(false);
   readonly currentPage = signal(1);
   readonly lastPage = signal(1);
+  readonly error = signal<string | null>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -25,6 +26,7 @@ export class JobService {
     }
 
     this.loading.set(true);
+    this.error.set(null);
     const url = page > 1 ? `${this.apiUrl}?page=${page}` : this.apiUrl;
 
     return this.http.get<JobApiResponse>(url).pipe(
@@ -32,8 +34,17 @@ export class JobService {
         sessionStorage.setItem(cacheKey, JSON.stringify(response));
         this.applyResponse(response, page);
         this.loading.set(false);
+      }),
+      catchError(() => {
+        this.loading.set(false);
+        this.error.set('We couldn\'t load jobs right now. Check your connection and try again.');
+        return EMPTY;
       })
     );
+  }
+
+  retry(): Observable<JobApiResponse> {
+    return this.fetchJobs(this.currentPage() + (this.jobs().length ? 1 : 0));
   }
 
   loadMore(): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { JobCardComponent } from '../../components/job-card/job-card.component';
 import { JobDetailComponent } from '../../components/job-detail/job-detail.component';
-import { FilterBarComponent } from '../../components/filter-bar/filter-bar.component';
+import { FilterBarComponent, JobSort } from '../../components/filter-bar/filter-bar.component';
 import { ApplyModalComponent } from '../../components/apply-modal/apply-modal.component';
 import { JobService } from '../../services/job.service';
 import { Job } from '../../models/job.model';
@@ -16,6 +16,7 @@ import { Job } from '../../models/job.model';
         <app-filter-bar
           (searchChange)="onSearchChange($event)"
           (filtersChange)="onFiltersChange($event)"
+          (sortChange)="sortBy.set($event)"
         />
         <div class="job-list-scroll">
           @for (job of filteredJobs(); track job.slug) {
@@ -28,6 +29,9 @@ import { Job } from '../../models/job.model';
             <div class="empty-state">
               @if (jobService.loading()) {
                 <p>Loading jobs...</p>
+              } @else if (jobService.error()) {
+                <p>{{ jobService.error() }}</p>
+                <button class="btn-retry" (click)="jobService.retry()">Try again</button>
               } @else {
                 <p>No jobs match your filters</p>
               }
@@ -96,6 +100,16 @@ import { Job } from '../../models/job.model';
       text-align: center;
       color: var(--color-muted);
     }
+    .btn-retry {
+      margin-top: 12px;
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-weight: 600;
+      cursor: pointer;
+    }
     .load-more-wrapper {
       padding: 16px;
       text-align: center;
@@ -151,6 +165,7 @@ export class JobListComponent implements OnInit {
   readonly selectedJob = signal<Job | null>(null);
   readonly applyJob = signal<Job | null>(null);
   readonly searchTerm = signal('');
+  readonly sortBy = signal<JobSort>('recent');
   readonly activeFilters = signal<{ types: Set<string>; remoteOnly: boolean }>({
     types: new Set(),
     remoteOnly: false,
@@ -179,7 +194,7 @@ export class JobListComponent implements OnInit {
       jobs = jobs.filter(j => j.remote);
     }
 
-    return jobs;
+    return sortJobs(jobs, this.sortBy());
   });
 
   constructor(public jobService: JobService) {}
@@ -202,5 +217,16 @@ export class JobListComponent implements OnInit {
 
   onFiltersChange(filters: { types: Set<string>; remoteOnly: boolean }): void {
     this.activeFilters.set(filters);
+  }
+}
+
+function sortJobs(jobs: Job[], sort: JobSort): Job[] {
+  switch (sort) {
+    case 'company':
+      return jobs.sort((a, b) => a.company_name.localeCompare(b.company_name));
+    case 'title':
+      return jobs.sort((a, b) => a.title.localeCompare(b.title));
+    default:
+      return jobs;
   }
 }
