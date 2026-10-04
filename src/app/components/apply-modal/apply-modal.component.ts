@@ -141,7 +141,7 @@ interface FormErrors {
       padding: 16px;
     }
     .modal {
-      background: #fff;
+      background: var(--color-surface);
       border-radius: 16px;
       width: 100%;
       max-width: 520px;
@@ -186,7 +186,7 @@ interface FormErrors {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      border: 2px solid #e5e7eb;
+      border: 2px solid var(--color-border);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -206,7 +206,7 @@ interface FormErrors {
     .step-line {
       width: 48px;
       height: 2px;
-      background: #e5e7eb;
+      background: var(--color-border);
     }
     .step-line-active {
       background: var(--color-primary);
@@ -226,11 +226,12 @@ interface FormErrors {
     }
     .form-input {
       padding: 10px 12px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--color-border);
       border-radius: 8px;
       font-size: 0.9rem;
       outline: none;
       transition: border-color 0.2s;
+      background: var(--color-surface);
       color: var(--color-text);
     }
     .form-input:focus {
@@ -273,17 +274,17 @@ interface FormErrors {
       color: #fff;
     }
     .btn-primary:hover {
-      background: #4338ca;
+      background: var(--color-primary-hover);
     }
     .btn-secondary {
-      background: #f1f5f9;
+      background: var(--color-subtle);
       color: var(--color-text);
     }
     .btn-secondary:hover {
-      background: #e2e8f0;
+      background: var(--color-subtle-hover);
     }
     .review-section {
-      background: #f8fafc;
+      background: var(--color-hover);
       border-radius: 8px;
       padding: 16px;
     }

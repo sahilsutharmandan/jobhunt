@@ -74,7 +74,7 @@ import { Job } from '../../models/job.model';
       height: calc(100vh - 60px);
     }
     .list-panel {
-      border-right: 1px solid #e5e7eb;
+      border-right: 1px solid var(--color-border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -112,7 +112,7 @@ import { Job } from '../../models/job.model';
       transition: background 0.2s;
     }
     .btn-load-more:hover {
-      background: #4338ca;
+      background: var(--color-primary-hover);
     }
     .btn-load-more:disabled {
       background: #a5b4fc;
@@ -137,7 +137,7 @@ import { Job } from '../../models/job.model';
         padding: 12px 16px;
         background: none;
         border: none;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid var(--color-border);
         font-size: 0.9rem;
         color: var(--color-primary);
         cursor: pointer;

@@ -73,7 +73,7 @@ import { Job } from '../../models/job.model';
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      border: 1px solid #f1f5f9;
+      border: 1px solid var(--color-border-soft);
     }
     .saved-card-top {
       display: flex;
@@ -121,7 +121,7 @@ import { Job } from '../../models/job.model';
     .tag {
       padding: 3px 10px;
       border-radius: 12px;
-      background: #f1f5f9;
+      background: var(--color-subtle);
       font-size: 0.75rem;
       color: var(--color-muted);
     }
@@ -144,7 +144,7 @@ import { Job } from '../../models/job.model';
       color: #fff;
     }
     .btn-view:hover {
-      background: #4338ca;
+      background: var(--color-primary-hover);
     }
     .btn-remove {
       background: #fef2f2;

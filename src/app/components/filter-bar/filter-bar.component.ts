@@ -58,13 +58,13 @@ import { FormsModule } from '@angular/forms';
     .search-input {
       width: 100%;
       padding: 10px 12px 10px 38px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--color-border);
       border-radius: 8px;
       font-size: 0.9rem;
       outline: none;
       transition: border-color 0.2s;
       box-sizing: border-box;
-      background: #fff;
+      background: var(--color-surface);
       color: var(--color-text);
     }
     .search-input:focus {
@@ -87,8 +87,8 @@ import { FormsModule } from '@angular/forms';
     .chip {
       padding: 6px 14px;
       border-radius: 20px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
       font-size: 0.8rem;
       cursor: pointer;
       color: var(--color-muted);
@@ -105,7 +105,7 @@ import { FormsModule } from '@angular/forms';
       border-color: var(--color-primary);
     }
     .chip-active:hover {
-      background: #4338ca;
+      background: var(--color-primary-hover);
       color: #fff;
     }
   `]

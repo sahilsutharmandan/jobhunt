@@ -114,7 +114,7 @@ import { ApplicationsService } from '../../services/applications.service';
       font-weight: 500;
     }
     .type-chip {
-      background: #eef2ff;
+      background: var(--color-primary-soft);
       color: var(--color-primary);
     }
     .remote-chip {
@@ -123,7 +123,7 @@ import { ApplicationsService } from '../../services/applications.service';
     }
     .detail-time {
       font-size: 0.8rem;
-      color: #9ca3af;
+      color: var(--color-faint);
     }
     .detail-tags {
       display: flex;
@@ -134,7 +134,7 @@ import { ApplicationsService } from '../../services/applications.service';
     .tag {
       padding: 3px 10px;
       border-radius: 12px;
-      background: #f1f5f9;
+      background: var(--color-subtle);
       font-size: 0.78rem;
       color: var(--color-muted);
     }
@@ -153,11 +153,11 @@ import { ApplicationsService } from '../../services/applications.service';
       transition: background 0.2s;
     }
     .btn-save {
-      background: #f1f5f9;
+      background: var(--color-subtle);
       color: var(--color-text);
     }
     .btn-save:hover {
-      background: #e2e8f0;
+      background: var(--color-subtle-hover);
     }
     .btn-saved {
       background: #fef3c7;
@@ -168,7 +168,7 @@ import { ApplicationsService } from '../../services/applications.service';
       color: #fff;
     }
     .btn-apply:hover {
-      background: #4338ca;
+      background: var(--color-primary-hover);
     }
     .btn-apply:disabled {
       background: #a5b4fc;

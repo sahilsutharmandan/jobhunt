@@ -22,8 +22,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       position: sticky;
       top: 0;
       z-index: 100;
-      background: #fff;
-      border-bottom: 1px solid #e5e7eb;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
     }
     .header-inner {
       max-width: 1400px;
@@ -53,7 +53,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       transition: background 0.2s, color 0.2s;
     }
     .nav a:hover {
-      background: #f1f5f9;
+      background: var(--color-subtle);
       color: var(--color-text);
     }
     .nav a.active {

@@ -93,7 +93,7 @@ import { ApplicationStatus } from '../../models/application.model';
       padding: 16px;
       text-align: center;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      border: 1px solid #f1f5f9;
+      border: 1px solid var(--color-border-soft);
     }
     .stat-count {
       display: block;
@@ -130,7 +130,7 @@ import { ApplicationStatus } from '../../models/application.model';
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      border: 1px solid #f1f5f9;
+      border: 1px solid var(--color-border-soft);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -158,12 +158,13 @@ import { ApplicationStatus } from '../../models/application.model';
     .status-select {
       padding: 8px 12px;
       border-radius: 8px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--color-border);
       font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
       outline: none;
-      background: #fff;
+      background: var(--color-surface);
+      color: var(--color-text);
     }
     .status-applied {
       color: var(--color-primary);

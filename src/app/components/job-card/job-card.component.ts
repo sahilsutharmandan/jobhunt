@@ -25,12 +25,12 @@ import { Job } from '../../models/job.model';
   styles: [`
     .job-card {
       padding: 16px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid var(--color-border-soft);
       cursor: pointer;
       transition: background 0.15s;
     }
     .job-card:hover {
-      background: #f8fafc;
+      background: var(--color-hover);
     }
     .job-card-active {
       background: #eef2ff;
@@ -85,13 +85,13 @@ import { Job } from '../../models/job.model';
     .tag {
       padding: 2px 8px;
       border-radius: 12px;
-      background: #f1f5f9;
+      background: var(--color-subtle);
       font-size: 0.72rem;
       color: var(--color-muted);
     }
     .card-time {
       font-size: 0.75rem;
-      color: #9ca3af;
+      color: var(--color-faint);
       margin: 8px 0 0;
     }
   `]
