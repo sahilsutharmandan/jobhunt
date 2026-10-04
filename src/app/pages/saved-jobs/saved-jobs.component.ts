@@ -8,7 +8,12 @@ import { Job } from '../../models/job.model';
   standalone: true,
   template: `
     <div class="saved-page">
-      <h1 class="page-title">Saved Jobs</h1>
+      <div class="page-head">
+        <h1 class="page-title">Saved Jobs</h1>
+        @if (savedJobsService.savedJobs().length > 1) {
+          <button class="btn-clear" (click)="clearAll()">Clear all</button>
+        }
+      </div>
 
       @if (savedJobsService.savedJobs().length === 0) {
         <div class="empty-state">
@@ -48,11 +53,32 @@ import { Job } from '../../models/job.model';
       margin: 0 auto;
       padding: 32px 16px;
     }
+    .page-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 24px;
+    }
     .page-title {
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--color-text);
-      margin: 0 0 24px;
+      margin: 0;
+    }
+    .btn-clear {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-clear:hover {
+      color: #ef4444;
+      border-color: #fecaca;
     }
     .empty-state {
       text-align: center;
@@ -160,6 +186,12 @@ export class SavedJobsComponent {
     public savedJobsService: SavedJobsService,
     private router: Router
   ) {}
+
+  clearAll(): void {
+    if (confirm('Remove all saved jobs?')) {
+      this.savedJobsService.clear();
+    }
+  }
 
   viewJob(job: Job): void {
     this.router.navigate(['/']);

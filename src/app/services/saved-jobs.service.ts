@@ -25,6 +25,10 @@ export class SavedJobsService {
     this.persist();
   }
 
+  clear(): void {
+    this.savedJobs.set([]);
+  }
+
   private load(): Job[] {
     const raw = localStorage.getItem(this.storageKey);
     return raw ? JSON.parse(raw) : [];

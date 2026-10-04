@@ -159,6 +159,12 @@ import { Job } from '../../models/job.model';
         font-weight: 500;
       }
     }
+
+    @media (max-width: 1024px) {
+      .job-list-page {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      }
+    }
   `]
 })
 export class JobListComponent implements OnInit {

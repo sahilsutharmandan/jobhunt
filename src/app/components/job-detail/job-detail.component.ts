@@ -60,6 +60,11 @@ import { ApplicationsService } from '../../services/applications.service';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      flex: 1;
+      min-height: 0;
+    }
     .detail-panel {
       padding: 24px;
       overflow-y: auto;
@@ -139,9 +144,15 @@ import { ApplicationsService } from '../../services/applications.service';
       color: var(--color-muted);
     }
     .detail-actions {
+      position: sticky;
+      top: 0;
+      z-index: 1;
       display: flex;
       gap: 12px;
-      margin-top: 20px;
+      margin-top: 8px;
+      padding: 12px 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border-soft);
     }
     .btn {
       padding: 10px 24px;
