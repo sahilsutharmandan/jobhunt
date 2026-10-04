@@ -2,6 +2,7 @@ import { Component, input, output } from '@angular/core';
 import { Job } from '../../models/job.model';
 import { SavedJobsService } from '../../services/saved-jobs.service';
 import { ApplicationsService } from '../../services/applications.service';
+import { initials, timeAgo } from '../../utils/format';
 
 @Component({
   selector: 'app-job-detail',
@@ -25,7 +26,7 @@ import { ApplicationsService } from '../../services/applications.service';
           @if (j.remote) {
             <span class="meta-chip remote-chip">Remote</span>
           }
-          <span class="detail-time">{{ getTimeAgo(j.created_at) }}</span>
+          <span class="detail-time">Posted {{ timeAgo(j.created_at) }}</span>
         </div>
 
         <div class="detail-tags">
@@ -229,24 +230,7 @@ export class JobDetailComponent {
     public applicationsService: ApplicationsService
   ) {}
 
-  getInitials(name: string): string {
-    return name
-      .split(/\s+/)
-      .slice(0, 2)
-      .map(w => w[0])
-      .join('')
-      .toUpperCase();
-  }
+  readonly getInitials = initials;
+  readonly timeAgo = timeAgo;
 
-  getTimeAgo(unixSeconds: number): string {
-    const now = Math.floor(Date.now() / 1000);
-    const diff = now - unixSeconds;
-    const days = Math.floor(diff / 86400);
-    if (days === 0) return 'Posted today';
-    if (days === 1) return 'Posted 1 day ago';
-    if (days < 30) return `Posted ${days} days ago`;
-    const months = Math.floor(days / 30);
-    if (months === 1) return 'Posted 1 month ago';
-    return `Posted ${months} months ago`;
-  }
 }

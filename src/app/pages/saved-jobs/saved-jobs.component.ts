@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SavedJobsService } from '../../services/saved-jobs.service';
 import { Job } from '../../models/job.model';
+import { initials } from '../../utils/format';
 
 @Component({
   selector: 'app-saved-jobs',
@@ -197,12 +198,5 @@ export class SavedJobsComponent {
     this.router.navigate(['/']);
   }
 
-  getInitials(name: string): string {
-    return name
-      .split(/\s+/)
-      .slice(0, 2)
-      .map(w => w[0])
-      .join('')
-      .toUpperCase();
-  }
+  readonly getInitials = initials;
 }

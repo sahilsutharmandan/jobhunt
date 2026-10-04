@@ -1,5 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { Job } from '../../models/job.model';
+import { initials, timeAgo } from '../../utils/format';
 
 @Component({
   selector: 'app-job-card',
@@ -19,7 +20,7 @@ import { Job } from '../../models/job.model';
           <span class="tag">{{ tag }}</span>
         }
       </div>
-      <p class="card-time">{{ getTimeAgo(job().created_at) }}</p>
+      <p class="card-time">Posted {{ timeAgo(job().created_at) }}</p>
     </div>
   `,
   styles: [`
@@ -101,24 +102,7 @@ export class JobCardComponent {
   readonly active = input(false);
   readonly selected = output<Job>();
 
-  getInitials(name: string): string {
-    return name
-      .split(/\s+/)
-      .slice(0, 2)
-      .map(w => w[0])
-      .join('')
-      .toUpperCase();
-  }
+  readonly getInitials = initials;
+  readonly timeAgo = timeAgo;
 
-  getTimeAgo(unixSeconds: number): string {
-    const now = Math.floor(Date.now() / 1000);
-    const diff = now - unixSeconds;
-    const days = Math.floor(diff / 86400);
-    if (days === 0) return 'Posted today';
-    if (days === 1) return 'Posted 1 day ago';
-    if (days < 30) return `Posted ${days} days ago`;
-    const months = Math.floor(days / 30);
-    if (months === 1) return 'Posted 1 month ago';
-    return `Posted ${months} months ago`;
-  }
 }

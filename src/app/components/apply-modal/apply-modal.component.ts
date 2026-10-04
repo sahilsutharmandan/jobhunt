@@ -1,8 +1,9 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, HostListener, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Job } from '../../models/job.model';
 import { Application } from '../../models/application.model';
 import { ApplicationsService } from '../../services/applications.service';
+import { formatFileSize } from '../../utils/format';
 
 interface FormErrors {
   fullName: string;
@@ -16,8 +17,8 @@ interface FormErrors {
   standalone: true,
   imports: [FormsModule],
   template: `
-    @if (job(); as j) {
-      <div class="modal-overlay" (click)="close.emit()">
+    @if (current(); as j) {
+      <div class="modal-overlay" [class.open]="!!job()" (click)="close.emit()">
         <div class="modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h2>Apply to {{ j.title }}</h2>
@@ -81,7 +82,7 @@ interface FormErrors {
                     <input type="file" class="form-input form-file" (change)="onFileChange($event)" accept=".pdf,.doc,.docx" />
                   </label>
                   @if (resumeName()) {
-                    <p class="file-info">{{ resumeName() }} ({{ formatSize(resumeSize()) }})</p>
+                    <p class="file-info">{{ resumeName() }} ({{ formatFileSize(resumeSize()) }})</p>
                   }
                   @if (errors().resume) {
                     <span class="form-error">{{ errors().resume }}</span>
@@ -108,7 +109,7 @@ interface FormErrors {
                   </div>
                   <div class="review-section">
                     <h4>Documents</h4>
-                    <p><strong>Resume:</strong> {{ resumeName() }} ({{ formatSize(resumeSize()) }})</p>
+                    <p><strong>Resume:</strong> {{ resumeName() }} ({{ formatFileSize(resumeSize()) }})</p>
                     @if (coverLetter) {
                       <p><strong>Cover Letter:</strong> {{ coverLetter.substring(0, 100) }}{{ coverLetter.length > 100 ? '...' : '' }}</p>
                     }
@@ -139,6 +140,13 @@ interface FormErrors {
       justify-content: center;
       z-index: 200;
       padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
     }
     .modal {
       background: var(--color-surface);
@@ -149,6 +157,11 @@ interface FormErrors {
       overflow-y: auto;
       padding: 28px;
       position: relative;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.2s ease;
+    }
+    .open .modal {
+      transform: none;
     }
     .modal-header {
       margin-bottom: 20px;
@@ -329,6 +342,7 @@ export class ApplyModalComponent {
   readonly job = input<Job | null>(null);
   readonly close = output<void>();
 
+  readonly current = signal<Job | null>(null);
   readonly step = signal(1);
   readonly submitted = signal(false);
   readonly resumeName = signal('');
@@ -340,7 +354,19 @@ export class ApplyModalComponent {
   phone = '';
   coverLetter = '';
 
-  constructor(private applicationsService: ApplicationsService) {}
+  readonly formatFileSize = formatFileSize;
+
+  constructor(private applicationsService: ApplicationsService) {
+    effect(() => {
+      const job = this.job();
+      if (job) this.current.set(job);
+    }, { allowSignalWrites: true });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.job()) this.close.emit();
+  }
 
   validateStep1(): void {
     const errs: FormErrors = { fullName: '', email: '', phone: '', resume: '' };
@@ -392,11 +418,5 @@ export class ApplyModalComponent {
 
     this.applicationsService.addApplication(application);
     this.submitted.set(true);
-  }
-
-  formatSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / 1048576).toFixed(1)} MB`;
   }
 }

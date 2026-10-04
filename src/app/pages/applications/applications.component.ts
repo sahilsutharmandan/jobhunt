@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApplicationsService } from '../../services/applications.service';
 import { ApplicationStatus } from '../../models/application.model';
+import { timeAgo } from '../../utils/format';
 
 @Component({
   selector: 'app-applications',
@@ -46,7 +47,7 @@ import { ApplicationStatus } from '../../models/application.model';
               <div class="app-info">
                 <h3 class="app-title">{{ app.jobTitle }}</h3>
                 <p class="app-company">{{ app.companyName }}</p>
-                <p class="app-date">Applied {{ getTimeAgo(app.appliedAt) }}</p>
+                <p class="app-date">Applied {{ timeAgo(app.appliedAt) }}</p>
               </div>
               <div class="app-status-section">
                 <select
@@ -196,21 +197,12 @@ import { ApplicationStatus } from '../../models/application.model';
   `]
 })
 export class ApplicationsComponent {
+  readonly timeAgo = timeAgo;
+
   constructor(public applicationsService: ApplicationsService) {}
 
   updateStatus(id: string, status: ApplicationStatus): void {
     this.applicationsService.updateStatus(id, status);
   }
 
-  getTimeAgo(unixSeconds: number): string {
-    const now = Math.floor(Date.now() / 1000);
-    const diff = now - unixSeconds;
-    const days = Math.floor(diff / 86400);
-    if (days === 0) return 'today';
-    if (days === 1) return '1 day ago';
-    if (days < 30) return `${days} days ago`;
-    const months = Math.floor(days / 30);
-    if (months === 1) return '1 month ago';
-    return `${months} months ago`;
-  }
 }

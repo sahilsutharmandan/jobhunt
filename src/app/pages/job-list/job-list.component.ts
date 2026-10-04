@@ -64,12 +64,10 @@ import { Job } from '../../models/job.model';
       </div>
     </div>
 
-    @if (applyJob()) {
-      <app-apply-modal
-        [job]="applyJob()"
-        (close)="applyJob.set(null)"
-      />
-    }
+    <app-apply-modal
+      [job]="applyJob()"
+      (close)="applyJob.set(null)"
+    />
   `,
   styles: [`
     .job-list-page {
