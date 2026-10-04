@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { SavedJobsService } from '../../services/saved-jobs.service';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         <a routerLink="/" class="logo">JobHunt</a>
         <nav class="nav">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Jobs</a>
-          <a routerLink="/saved" routerLinkActive="active">Saved</a>
+          <a routerLink="/saved" routerLinkActive="active">
+            Saved
+            @if (savedCount() > 0) {
+              <span class="badge">{{ savedCount() }}</span>
+            }
+          </a>
           <a routerLink="/applications" routerLinkActive="active">Applications</a>
         </nav>
       </div>
@@ -45,6 +51,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       gap: 8px;
     }
     .nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 8px 16px;
       border-radius: 8px;
       text-decoration: none;
@@ -60,6 +69,24 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       background: var(--color-primary);
       color: #fff;
     }
+    .badge {
+      min-width: 20px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: var(--color-primary-soft);
+      color: var(--color-primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .nav a.active .badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
   `]
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  private readonly savedJobs = inject(SavedJobsService);
+
+  readonly savedCount = signal(this.savedJobs.savedJobs().length);
+}

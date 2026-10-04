@@ -33,6 +33,10 @@ import { timeAgo } from '../../utils/format';
           <span class="stat-count">{{ applicationsService.stats().rejected }}</span>
           <span class="stat-label">Rejected</span>
         </div>
+        <div class="stat-card stat-rate">
+          <span class="stat-count">{{ applicationsService.stats().responseRate }}%</span>
+          <span class="stat-label">Response rate</span>
+        </div>
       </div>
 
       @if (applicationsService.applications().length === 0) {

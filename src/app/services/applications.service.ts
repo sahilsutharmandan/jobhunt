@@ -9,12 +9,18 @@ export class ApplicationsService {
 
   readonly stats = computed(() => {
     const apps = this.applications();
+    const count = (status: ApplicationStatus) => apps.filter(a => a.status === status).length;
+    const applied = count('applied');
+    const interview = count('interview');
+    const offer = count('offer');
+    const rejected = count('rejected');
     return {
-      applied: apps.filter(a => a.status === 'applied').length,
-      interview: apps.filter(a => a.status === 'interview').length,
-      offer: apps.filter(a => a.status === 'offer').length,
-      rejected: apps.filter(a => a.status === 'rejected').length,
+      applied,
+      interview,
+      offer,
+      rejected,
       total: apps.length,
+      responseRate: Math.round(((interview + offer + rejected) / applied) * 100),
     };
   });
 
